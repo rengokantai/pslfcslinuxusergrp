@@ -38,4 +38,46 @@ ls -A /etc/skel  (skeleton, template for new users)
 .bash_logout
 ```
 #####creating local users
+######id
+```
+id -g
+id -G
+id -Gn
+```
+######create user account
+```
+sudo useradd -N user2 -g gp1-G gp2  //do not add to default group    -s /bin/sh
+```
+######managing user pass
+```
+echo 'user:pass' |sudo chpasswd
+echo password | sudo passed user2 --stdin  //only in redhat
+```
+######password age
+```
+chage -l usename
+sudo pwconv //cannot read password from /etc/passwd
+```
+######account defaults
+```
+less /etc/login.defs
+```
+```
+vi /etc/default/useradd
+```
+######modify and delete accounts
+```
+chsh -l
+chsh -s /bin/sh bob  = usermod -s /bin/sh bob
+userdel -r user  //remove home dict, cronjob
+find /home -uid 1111 -delete
+```
+
+#####managing local group
+######creating local group
+```
+newgrp wheel  //change group in session
+```
+
+
 ```
