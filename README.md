@@ -3,7 +3,7 @@
 ```
 getent passwd   //list database
 getent group
-getent network
+getent networks
 getent services
 grep passwd /etc/nsswitch.conf
 ```
@@ -24,6 +24,15 @@ su -  = su -l  //provide login shell
 ```
 ```
 su  //not login shell, still current user home dic
+```
+show current user
+```
+echo $USER
+```
+######06
+```
+ls /etc/bash*
+ls /etc/profile*
 ```
 ps1, \W = relative path \w = full path
 ######home dict
