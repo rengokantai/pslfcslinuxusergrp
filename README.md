@@ -217,3 +217,41 @@ add
 ```
 *;*;user1|user2;!Wk0800-1800
 ```
+#####Implementing OpenLDAP Directories on CentOS 7
+######Automating Home Directory Creation at User Login
+server1:
+```
+netstat -ltn
+firewall-cmd --permanent --add-service=ldap && firewall-cmd --reload
+```
+install:
+```
+yum install -y openldap openldap-clients openldap-servers migrationtools.noarch
+```
+config DB
+```
+cp /usr/share/openldap-servers/DB_CONFIG.example  /var/lib/ldap/DB_CONFIG
+slaptest  //fail this time
+```
+change owner
+```
+chown ldap:ldap /var/lib/ldap/*
+systemctl start slapd
+```
+
+add h
+```
+cd /etc/openldap/schema
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f cosine.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f nis.ldif
+```
+create password
+```
+cd
+slappasswd -s pass -n > passwd
+cat passwd
+```
+create config
+```
+vim config.ldif (needs to create)
+```
