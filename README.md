@@ -107,8 +107,69 @@ find /home -uid 1111 -delete
 #####managing local group
 ######creating local group
 ```
-newgrp wheel  //change group in session
+grep user /etc/group
 ```
-
-
+```
+newgrp wheel  //change group in session,change current user to a new group
+```
+delete a group from a user
+```
+gpasswd -d user group
+usermod -G "" username //remove all secondary group
+```
+add group
+```
+groupadd new
+```
+######Manage Group Membership
+```
+usermod -G new,wheel
+gpasswd -M user1,user2 group
+```
+######Making Use of the SGID Permission
+```
+yum install -y httpd w3m
+chgrp -R apache /var/www
+chmod -R o= /var/www
+```
+######Group Passwords
+```
+id -Gn
+newgrp adm  //will prompt a password
+gpasswd adm
+```
+#####Using PAM to Control User Access
+######Automating Home Directory Creation at User Login
+```
+ls /etc/pam.d
+ls /lib64/security
+ls /etc/security
+```
+change 
+```
+vim /etc/login.defs
+```
+if
+```
+CREATE_HOME no,
+```
+then will not create home dic automatically.  
+Search oddjob
+ ```
+ rpm -qa | grep oddjob
+ ```
+ start oddjob
+ ```
+ systemctl start oddjobd
+ ```
+ start autocinfig
+ ```
+ authconfig --enablemkhomedir --update
+ cd /etc/pam.d
+ grep mkhomedir *
+ ```
+ ######Implementing Password Policies
+ ```
+ cat /etc/pam.d/system-auth
+ lsdd /etc/security/pwquality.conf
 ```
