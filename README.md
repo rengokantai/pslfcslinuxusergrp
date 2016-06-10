@@ -158,6 +158,10 @@ Search oddjob
  ```
  rpm -qa | grep oddjob
  ```
+ If not present,
+ ```
+ yum install oddjob-mkhomedir -y
+ ```
  start oddjob
  ```
  systemctl start oddjobd
@@ -171,5 +175,45 @@ Search oddjob
  ######Implementing Password Policies
  ```
  cat /etc/pam.d/system-auth
- lsdd /etc/security/pwquality.conf
+ vim /etc/security/pwquality.conf
+ pwscore
+```
+######Restricting or Limiting Access to Resources
+```
+ulimit -a
+ulimit -u  //max user process
+```
+create a test sctipt
+```
+#!/bin/basj
+echo "x"
+$0
+```
+```
+chmod +x test.sh
+```
+config permanent:
+```
+vim /etc/security/limits.conf
+```
+edit(examples)
+```
+* - maxlogins 4
+@users soft nproc 10
+```
+######Adding Login Time Restrictions
+```
+vim /etc/pam.d/sshd
+```
+edit
+```
+account required pam.time.so
+```
+then
+```
+vim /etc/security/time.conf
+```
+add
+```
+*;*;user1|user2;!Wk0800-1800
 ```
