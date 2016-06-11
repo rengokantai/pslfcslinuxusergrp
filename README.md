@@ -420,3 +420,97 @@ replace ke to sally, 4000->4001
 ```
 ldapadd -x -W -D "cn=Manager,dc=mylabserver,dc=com" -f newuser.ldif
 ```
+#####Implementing Kerberos Authentication
+######Configuring NTP
+```
+yum install -y ntp
+vim /etc/ntp.conf
+```
+edit
+```
+restrict 172.31.127.100 mask 255.255.255.0 nomodify nostrap
+```
+then
+```
+systemctl start ntpd
+firewall-cmd --add-service=ntp --permanent && firewall-cmd --reload
+```
+
+edit /etc/hosts in server1, add server2 hostname.(do this in server2).  
+For server2:
+```
+yum install -y
+vim /etc/ntp.conf
+```
+edit,add
+```
+server rengokantai1.mylabserver.com iburst perfer
+```
+then
+```
+systemctl start ntpd
+ntpq -p
+```
+######Configuring the Kerberos Services
+server1
+```
+yum install -y rng-tools.x86_64 krb5-server krb5-workstation pam_krb5 && systemctl start rngd
+```
+if bug arises
+```
+vim /usr/lib/systemd/system/rngd.service
+```
+edit
+```
+ExecStart=/sbin/rngd -f -r /dev/urandom
+```
+config
+```
+vim /etc/krb5.conf
+```
+edit
+```
+[libdefaults]
+ dns_lookup_realm = false
+ ticket_lifetime = 24h
+ renew_lifetime = 7d
+ forwardable = true
+ rdns = false
+ default_realm = mylabserver.COM
+ default_ccache_name = KEYRING:persistent:%{uid}
+
+[realms]
+ mylabserver.COM = {
+  kdc = rengokantai1.mylabserver.com
+  admin_server = rengokantai1.mylabserver.com
+ }
+
+[domain_realm]
+.mylabserver.com = mylabserver.COM
+mylabserver.com = mylabserver.COM
+```
+then create master pass
+```
+kdb5_util create -s -r mylabserver.COM
+sytemctl start krb5kdc kadmin
+```
+######Adding Kerberos Principals
+```
+netstat -ltn
+firewall-cmd --add-service=kpasswd --permanent && firewall-cmd --add-service=kpasswd --permanent && firewall-cmd --add-service=749/tcp --permanent && firewall-cmd --reload
+```
+go to panal
+```
+kadmin.local
+: listprincs
+: addprinc root/admin (type pass)
+: addprinc user
+: addprinc -randkey host/rengokantai1.mylabserver.com
+: ktadd host/rengokantai1.mylabserver.com
+quit
+```
+######Enabling Kerberos Authentication
+SERVER1:
+```
+
+```
