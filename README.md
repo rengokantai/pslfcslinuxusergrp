@@ -492,7 +492,7 @@ mylabserver.com = mylabserver.COM
 then create master pass
 ```
 kdb5_util create -s -r mylabserver.COM
-sytemctl start krb5kdc kadmin
+systemctl start krb5kdc kadmin
 ```
 ######Adding Kerberos Principals
 ```
@@ -512,5 +512,49 @@ quit
 ######Enabling Kerberos Authentication
 SERVER1:
 ```
-
+ vim /etc/ssh/ssh_config
+```
+edit
+```
+GSSAPIAuthentication yes
+GSSAPIDelegateCredentials yes
+```   
+restart
+```
+systemctl restart sshd && authconfig --enablekrb5 --update
+```
+then switch to user account.
+```
+exit
+klist //not found
+kinit (login, then klist)
+kdestroy  //delete key
+```
+######Adding Additional Hosts
+server2
+```
+yum install -y krb5-workstation pam_krb5
+scp user@rengokantai1:/etc/krb5.conf /etc
+```
+connect (not kadmin.local)    (here it fails, should return back to server1 and use kadmin.local
+```
+kadmin
+```
+then
+```
+addprinc -randkey host/rengokantai2.mylabserver.com
+ktadd host/rengokantai2.mylabserver.com
+```
+then
+```
+ vim /etc/ssh/ssh_config
+```
+edit
+```
+GSSAPIAuthentication yes
+GSSAPIDelegateCredentials yes
+```   
+restart
+```
+systemctl restart sshd && authconfig --enablekrb5 --update
 ```
