@@ -369,3 +369,54 @@ gidNumber: 4000
 homeDirectory: /home/ke
 gecos: ke
 ```
+#####Implementing OpenLDAP Authentication in CentOS 7
+######Installing the OpenLDAP Client
+server2
+```
+echo "172.31.114.180 rengokantai1.mylabserver.com" >> /etc/hosts
+```
+install oddjob
+```
+yum install -y oddjob oddjob-mkhomedir
+systemctl start oddjobd
+yum install openldap-clients.x86_64 nss-pam-ldapd -y
+```
+gui:
+```
+authconfig-tui
+```
+then: choose useldap, use ldap auth->next
+server: ldap://rengokantai1.mylabserver.com,then exit
+```
+authconfig --enableldap --ldapserver=rengokantai1.mylabserver.com --ldapbasedn="dc=mylabserver,dc=dom" --enablemkhomedir --update
+```
+then
+```
+grep passwd /etc/nsswitch.conf
+```
+######list user and groups
+```
+grep ldap /etc/nsswitch.conf
+```
+edit: /etc/nsswitch.conf
+```
+netgroup: files sss
+automount: files
+```
+######Searching LDAP Users
+```
+ldapsearch -x -H ldap://rengokantai1.mylabserver.com -b dc=mylabserver,dc=com
+ldapsearch -x -LLL -H ldap://rengokantai1.mylabserver.com -b dc=mylabserver,dc=com
+ldapsearch -x -H ldap://rengokantai1.mylabserver.com -b dc=mylabserver,dc=com "(objectclass=account)"
+ldapsearch -x -H ldap://rengokantai1.mylabserver.com -b dc=mylabserver,dc=com "(&(objectclass=account)(uid=ke))"
+ldapsearch -x -H ldap://rengokantai1.mylabserver.com -b dc=mylabserver,dc=com "(&(objectclass=account)(uid=ke))" uidNumber uid
+```
+create new user
+```
+ldapsearch -x -H ldap://rengokantai1.mylabserver.com -b dc=mylabserver,dc=com "(&(objectclass=account)(uid=ke))" > newuser.ldif
+vim newuser.ldif
+```
+replace ke to sally, 4000->4001
+```
+ldapadd -x -W -D "cn=Manager,dc=mylabserver,dc=com" -f newuser.ldif
+```
