@@ -235,15 +235,13 @@ slaptest  //fail this time
 ```
 change owner
 ```
-chown ldap:ldap /var/lib/ldap/*
-systemctl start slapd
+chown ldap:ldap /var/lib/ldap/* && systemctl start slapd
 ```
 
 add h
 ```
 cd /etc/openldap/schema
-ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f cosine.ldif
-ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f nis.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f cosine.ldif && ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f nis.ldif
 ```
 create password
 ```
@@ -254,4 +252,120 @@ cat passwd
 create config
 ```
 vim config.ldif (needs to create)
+```
+content
+```
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcSuffix
+olcSuffix: dc=mylabserver,dc=com
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootDN
+olcRootDN: cn=Manager,dc=mylabserver,dc=com
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootPW
+#Password is Password1 or add your own
+olcRootPW: {SSHA}8cUY6QugFU/Az2XjG1bhAw8U7cyPq1Va
+
+dn: cn=config
+changetype: modify
+replace: olcLogLevel
+olcLogLevel: 0
+
+dn: olcDatabase={1}monitor,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" read by dn.base="cn=Manager,dc=mylabserver,dc=com" read by * none
+```
+then
+```
+ldapmodify -Y EXTERNAL -H ldapi:/// -f config.ldif
+```
+######Creating the Directory Tree
+create structure.ldif
+```
+dn: dc=mylabserver,dc=com
+dc: mylabserver
+objectClass: top
+objectClass: domain
+
+dn: ou=people,dc=mylabserver,dc=com
+ou: people
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=group,dc=mylabserver,dc=com
+ou: group
+objectClass: top
+objectClass: organizationalUnit
+```
+then
+```
+ldapadd -x -W -D "cn=Manager,dc=mylabserver,dc=com" -f structure.ldif
+```
+search
+```
+ldapsearch -x -W -D "cn=Manager,dc=mylabserver,dc=com" -b "dc=mylabserver,dc=com" -s sub "(objectclass=organizationalUnit)"
+```
+######Adding Users and Groups
+create group.ldif
+```
+dn: cn=ldapusers,ou=group,dc=mylabserver,dc=com
+objectClass: posixGroup
+cn: ldapusers
+gidNumber: 4000
+```
+then
+```
+ldapadd -x -W -D "cn=Manager,dc=mylabserver,dc=com" -f group.ldif
+```
+
+edit
+```
+vim /usr/share/migrationtools/migrate_common.ph
+```
+edit
+```
+# Default DNS domain
+$DEFAULT_MAIL_DOMAIN = "mylabserver.com";
+
+# Default base
+$DEFAULT_BASE = "dc=mylabserver,dc=com";
+```
+then
+```
+grep -w user /etc/passwd >passwd   //this may return mutiple users contain word 'user'
+/usr/share/migrationtools/migrate_passwd.pl passwd user.ldif
+```
+then edit, change to `ke`
+```
+vim user.ldif
+```
+add rule
+```
+ldapadd -x -W -D "cn=Manager,dc=mylabserver,dc=com" -f user.ldif
+```
+user.ldif:
+```
+dn: uid=ke,ou=People,dc=mylabserver,dc=com
+uid: ke
+cn: ke
+objectClass: account
+objectClass: posixAccount
+objectClass: top
+objectClass: shadowAccount
+userPassword: {crypt}$6$/vxShd.R$eN1cnFtmcwT5nMlMWp8Rlq3NwTVILAYbIGFu3tiRcmPb00F
+dNQDJ0KuoBHFyOg/PkGxrbDEg6ga3oBbE9Qcom/
+shadowLastChange: 16423
+shadowMin: 0
+shadowWarning: 7
+loginShell: /bin/bash
+uidNumber: 4000
+gidNumber: 4000
+homeDirectory: /home/ke
+gecos: ke
 ```
