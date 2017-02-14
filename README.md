@@ -1,4 +1,4 @@
-#### pslfcslinuxusergrp
+# pslfcslinuxusergrp
 #####intro
 ```
 getent passwd   //list database
@@ -217,8 +217,8 @@ add
 ```
 *;*;user1|user2;!Wk0800-1800
 ```
-#####Implementing OpenLDAP Directories on CentOS 7
-######Automating Home Directory Creation at User Login
+##7. Implementing OpenLDAP Directories on CentOS 7
+###2 Installing OpenLDAP and Firewall Configuration
 server1:
 ```
 netstat -ltn
@@ -231,11 +231,12 @@ yum install -y openldap openldap-clients openldap-servers migrationtools.noarch
 config DB
 ```
 cp /usr/share/openldap-servers/DB_CONFIG.example  /var/lib/ldap/DB_CONFIG
+ls -l /var/lib/ldap
 slaptest  //fail this time
 ```
 change owner
 ```
-chown ldap:ldap /var/lib/ldap/* && systemctl start slapd
+chown ldap:ldap /var/lib/ldap/* && systemctl start slapd   // ldap.ldap  = ldap:ldap
 ```
 
 add h
@@ -245,9 +246,7 @@ ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f cosine.ldif && ldapadd -Y EXT
 ```
 create password
 ```
-cd
-slappasswd -s pass -n > passwd
-cat passwd
+cd && slappasswd -s pass -n > passwd && cat passwd
 ```
 create config
 ```
