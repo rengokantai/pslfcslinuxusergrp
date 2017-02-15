@@ -1,5 +1,5 @@
 # pslfcslinuxusergrp
-#####intro
+##1. intro
 ```
 getent passwd   //list database
 getent group
@@ -7,8 +7,8 @@ getent networks
 getent services
 grep passwd /etc/nsswitch.conf
 ```
-#####login scripts
-######centos 7
+##2. login scripts
+###1 Login Scripts in centos 7
 login shell (run once, store path variables)
 ```
 ~/.bash_profile  /etc/profile
@@ -18,7 +18,7 @@ non-login shell (show every times)
 ```
 ~/.bashrc /etc/.bashrc
 ```
-######execution order
+###2 execution order
 ```
 su -  = su -l  //provide login shell
 ```
@@ -29,13 +29,13 @@ show current user
 ```
 echo $USER
 ```
-######06
+###5
 ```
 ls /etc/bash*
 ls /etc/profile*
 ```
 ps1, \W = relative path \w = full path
-######home dict
+###home dicaxureaxt
 ```
 ls -A do not show . ..
 ```
@@ -66,12 +66,13 @@ useradd user3 -G adm -s /bin/sh
 ######managing user pass
 ```
 passwd user1
-echo 'user2:pass' |sudo chpasswd
+echo 'user2:pass' |sudo chpasswd   //redhat
 echo pass | sudo passwd user3 --stdin  //only in redhat
 ```
 ######password age
 ```
 chage -l usename
+sudo pwwnconv //show encrypted password in /etc/passwd
 sudo pwconv //cannot read password from /etc/passwd,recover.
 change -M user
 ```
