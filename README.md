@@ -122,26 +122,26 @@ add group
 ```
 groupadd new
 ```
-######Manage Group Membership
+###Manage Group Membership
 ```
 usermod -G new,wheel
 gpasswd -M user1,user2 group
 gpasswd user group
 ```
-######Making Use of the SGID Permission
+###Making Use of the SGID Permission
 ```
 yum install -y httpd w3m
 chgrp -R apache /var/www
 chmod -R o= /var/www
 ```
-######Group Passwords
+###Group Passwords
 ```
 id -Gn
 newgrp adm  //will prompt a password
 gpasswd adm
 ```
-#####Using PAM to Control User Access
-######Automating Home Directory Creation at User Login
+##6. Using PAM to Control User Access
+###2Automating Home Directory Creation at User Login
 ```
 ls /etc/pam.d
 ls /lib64/security
@@ -174,13 +174,13 @@ Search oddjob
  cd /etc/pam.d
  grep mkhomedir *
  ```
- ######Implementing Password Policies
+ ###Implementing Password Policies
  ```
  cat /etc/pam.d/system-auth
  vim /etc/security/pwquality.conf
  pwscore
 ```
-######Restricting or Limiting Access to Resources
+###Restricting or Limiting Access to Resources
 ```
 ulimit -a
 ulimit -u  //max user process
@@ -203,7 +203,7 @@ edit(examples)
 * - maxlogins 4
 @users soft nproc 10
 ```
-######Adding Login Time Restrictions
+###Adding Login Time Restrictions
 ```
 vim /etc/pam.d/sshd
 ```
