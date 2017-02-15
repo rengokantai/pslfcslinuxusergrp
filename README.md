@@ -105,8 +105,8 @@ userdel -r user  //remove home dict, cronjob
 find /home -uid 1111 -delete
 ```
 
-#####managing local group
-######creating local group
+##5. managing local group
+###1 creating local group
 ```
 grep user /etc/group
 ```
@@ -126,6 +126,7 @@ groupadd new
 ```
 usermod -G new,wheel
 gpasswd -M user1,user2 group
+gpasswd user group
 ```
 ######Making Use of the SGID Permission
 ```
