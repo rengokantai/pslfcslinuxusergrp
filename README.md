@@ -189,7 +189,10 @@ create a test sctipt
 ```
 #!/bin/basj
 echo "x"
-$0
+$0  # this means execute the script unlimited times.
+```
+```
+ulimit -u 10   //can only execute 10 times
 ```
 ```
 chmod +x test.sh
